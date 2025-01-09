@@ -1,6 +1,5 @@
 package com.fnd.miflix.views
 
-import android.text.Layout
 import android.util.Log
 import com.fnd.miflix.R
 import androidx.compose.foundation.Image
