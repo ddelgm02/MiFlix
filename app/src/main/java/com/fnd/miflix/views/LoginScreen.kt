@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.*
@@ -17,11 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
+@Preview
 @Composable
 fun LoginScreen(){
 
@@ -38,11 +41,9 @@ fun LoginScreen(){
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = "Iniciar Sesión en tu cuenta")
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = email, onValueChange = {
-            email = it // Actualiza el valor del campo de texto
-        }, label = {
-            Text(text = "Email")
-        })
+
+        email = textFieldEmail(email)
+
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(value = password, onValueChange = {
             password = it
@@ -59,4 +60,16 @@ fun LoginScreen(){
         }
     }
 
+}
+
+@Composable
+private fun textFieldEmail(email: String): String {
+    var email1 = email
+    OutlinedTextField(
+        value = email1,
+        onValueChange = { email1 = it },
+        label = { Text(text = "Email") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+    )
+    return email1
 }
