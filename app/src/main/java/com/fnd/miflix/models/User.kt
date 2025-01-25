@@ -1,7 +1,12 @@
 package com.fnd.miflix.models
 
-object User {
-    private var username: String = ""
-    private var password: String = ""
-    private var isAdmin: Boolean = false
-}
+import androidx.room.*
+import com.fnd.miflix.models.Perfil
+
+// Entidad Usuarios
+@Entity (tableName = "Usuarios")
+data class Usuario(
+    @PrimaryKey val id: Int,
+    val nombre: String,
+    val correo: String
+)
