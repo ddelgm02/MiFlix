@@ -44,7 +44,7 @@ fun LoginScreen(viewModel: LoginController = LoginController()){
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
-        Image(painter = painterResource(id = R.drawable.mobile_login), contentDescription = "Login Image", modifier = Modifier.size(300.dp))
+        Image(painter = painterResource(id = R.drawable.applogin), contentDescription = "Login Image", modifier = Modifier.size(300.dp))
         Text(text = "Bienvenido a MiFlix", fontSize = 35.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = "Iniciar Sesión en tu cuenta")
