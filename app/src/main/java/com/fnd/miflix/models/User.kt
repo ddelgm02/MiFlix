@@ -1,7 +1,6 @@
 package com.fnd.miflix.models
 
 import androidx.room.*
-import com.fnd.miflix.models.Perfil
 
 // Entidad Usuarios
 @Entity (tableName = "Usuarios",
@@ -12,5 +11,6 @@ data class Usuario(
     val nombre: String,
     val correo: String,
     val fechaCreacion: Long = System.currentTimeMillis(),
-    val admin: Boolean = false
+    val admin: Boolean = false,
+    val password: String
 )
