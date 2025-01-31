@@ -27,29 +27,42 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.fnd.miflix.R
-import com.fnd.miflix.controller.LoginController
-import com.fnd.miflix.ui.theme.Purple40
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fnd.miflix.R
+import com.fnd.miflix.controller.SignUpController
+import com.fnd.miflix.ui.theme.Purple40
 
 @Composable
-fun LoginScreen(viewModel: LoginController = viewModel()){
+fun SignUpScreen(viewModel: SignUpController = viewModel()) {
 
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ){
-        Image(painter = painterResource(id = R.drawable.applogin), contentDescription = "Login Image", modifier = Modifier.size(300.dp))
+    ) {
+        Image(painter = painterResource(id = R.drawable.applogin), contentDescription = "Sign Up Image", modifier = Modifier.size(300.dp))
         Text(text = "Bienvenido a MiFlix", fontSize = 35.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = "Iniciar Sesión en tu cuenta")
+        Text(text = "Crear una nueva cuenta")
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Nombre
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text(text = "Nombre") }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Email
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -58,16 +71,35 @@ fun LoginScreen(viewModel: LoginController = viewModel()){
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = password, onValueChange = {
-            password = it
-        }, label = {
-            Text(text = "Password")
-        }, visualTransformation = PasswordVisualTransformation())
+
+        // Contraseña
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text(text = "Contraseña") },
+            visualTransformation = PasswordVisualTransformation()
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Confirmación de Contraseña
+        OutlinedTextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text(text = "Confirmar Contraseña") },
+            visualTransformation = PasswordVisualTransformation()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón de "Registrarse"
         Button(onClick = {
-            Log.i("Credentials", "Email : $email  Password : $password")
-            viewModel.login(email, password)
+            if (password.trim() == confirmPassword.trim()) {
+                Log.i("Credentials", "Name : $name, Email : $email, Password : $password")
+                viewModel.signUp(name, email, password)
+            } else {
+                Log.e("SignUp", "Las contraseñas no coinciden")
+            }
         }) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(
@@ -75,21 +107,17 @@ fun LoginScreen(viewModel: LoginController = viewModel()){
                     modifier = Modifier.size(16.dp)
                 )
             } else {
-                Text("Iniciar sesión")
+                Text("Registrarse")
             }
-
         }
 
         // Mostrar mensajes de éxito o error
+        Spacer(modifier = Modifier.height(16.dp))
         uiState.successMessage?.let {
-            Spacer(modifier = Modifier.height(16.dp))
             Text(it, color = Purple40)
         }
         uiState.errorMessage?.let {
-            Spacer(modifier = Modifier.height(16.dp))
             Text(it, color = Purple40)
         }
     }
-
 }
-

@@ -6,30 +6,38 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.fnd.miflix.DAO.UsuarioDao
+import org.mindrot.jbcrypt.BCrypt
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import com.fnd.miflix.database.AppDatabase
 
-class LoginController: ViewModel() {
+class LoginController(application: Application) : AndroidViewModel(application){
+
+    private val usuarioDao = AppDatabase.getDatabase(application).usuariosDao()
 
     // Estado de la UI
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    // Lógica de inicio de sesión
+    // Lógica de inicio de sesión con RoomDB
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            // Simular una llamada a una API
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = LoginUiState(isLoading = true)
 
             try {
                 // Simulación: Cambia esto por una llamada real a un backend
-                if (email == "test@example.com" && password == "password") {
+                val usuario = usuarioDao.obtenerUsuarioPorCorreo(email)
+
+                if (usuario != null && BCrypt.checkpw(password, usuario.passwordHash)) {
                     _uiState.value = LoginUiState(successMessage = "¡Inicio de sesión exitoso!")
                 } else {
-                    _uiState.value = LoginUiState(errorMessage = "Credenciales inválidas")
+                    _uiState.value = LoginUiState(errorMessage = "Correo o contraseña inválidas")
                 }
             } catch (e: Exception) {
                 _uiState.value = LoginUiState(errorMessage = "Error inesperado: ${e.message}")
             } finally {
-                _uiState.value = _uiState.value.copy(isLoading = false)
+                _uiState.value = LoginUiState(isLoading = false)
             }
         }
     }

@@ -10,16 +10,22 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import com.fnd.miflix.ui.theme.MiFlixTheme
 import com.fnd.miflix.views.LoginScreen
+import com.fnd.miflix.views.SignUpScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.fnd.miflix.controller.LoginController
+import com.fnd.miflix.database.AppDatabase
+import androidx.activity.viewModels
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MiFlixTheme {
                 setBarColor(color = MaterialTheme.colorScheme.background )
-                LoginScreen()
+                SignUpScreen()
+
             }
         }
     }

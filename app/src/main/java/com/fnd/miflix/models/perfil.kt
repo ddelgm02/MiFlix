@@ -2,7 +2,6 @@ package com.fnd.miflix.models
 
 import androidx.room.*
 
-
 @Entity (
     tableName = "Perfiles",
     foreignKeys = [
