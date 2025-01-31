@@ -29,7 +29,7 @@ class LoginController(application: Application) : AndroidViewModel(application){
                 // Simulación: Cambia esto por una llamada real a un backend
                 val usuario = usuarioDao.obtenerUsuarioPorCorreo(email)
 
-                if (usuario != null && BCrypt.checkpw(password, usuario.passwordHash)) {
+                if (usuario != null && BCrypt.checkpw(password.trim(), usuario.passwordHash)) {
                     _uiState.value = LoginUiState(successMessage = "¡Inicio de sesión exitoso!")
                 } else {
                     _uiState.value = LoginUiState(errorMessage = "Correo o contraseña inválidas")

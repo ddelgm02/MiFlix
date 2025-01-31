@@ -31,9 +31,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fnd.miflix.R
 import com.fnd.miflix.controller.SignUpController
 import com.fnd.miflix.ui.theme.Purple40
+import androidx.navigation.NavController
 
 @Composable
-fun SignUpScreen(viewModel: SignUpController = viewModel()) {
+fun SignUpScreen(
+    navController: NavController,
+    viewModel: SignUpController = viewModel()
+) {
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -118,6 +122,14 @@ fun SignUpScreen(viewModel: SignUpController = viewModel()) {
         }
         uiState.errorMessage?.let {
             Text(it, color = Purple40)
+        }
+
+        // Botón para volver a la pantalla de login
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = {
+            navController.popBackStack() // Vuelve a la pantalla de Login
+        }) {
+            Text(text = "¿Ya tienes una cuenta? Inicia sesión")
         }
     }
 }

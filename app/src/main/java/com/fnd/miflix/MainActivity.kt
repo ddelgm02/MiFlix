@@ -11,21 +11,26 @@ import androidx.compose.ui.graphics.Color
 import com.fnd.miflix.ui.theme.MiFlixTheme
 import com.fnd.miflix.views.LoginScreen
 import com.fnd.miflix.views.SignUpScreen
+import com.fnd.miflix.views.HomeScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.fnd.miflix.controller.LoginController
-import com.fnd.miflix.database.AppDatabase
 import androidx.activity.viewModels
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.*
 
 class MainActivity : ComponentActivity() {
+
+    private val loginController: LoginController by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MiFlixTheme {
-                setBarColor(color = MaterialTheme.colorScheme.background )
-                SignUpScreen()
+                val navController = rememberNavController()
 
+                setBarColor(color = MaterialTheme.colorScheme.background )
+                NavigationHost(navController = navController)
             }
         }
     }
@@ -39,5 +44,28 @@ class MainActivity : ComponentActivity() {
             )
         }
 
+    }
+
+    @Composable
+    private fun NavigationHost(navController: NavHostController) {
+        // Configuración de las pantallas de la aplicación
+        NavHost(navController = navController, startDestination = "login") {
+            composable("login") {
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate("home") // Navegar a la pantalla de inicio
+                    },
+                    onSignUpClick = {
+                        navController.navigate("signup") // Navegar a la pantalla de registro
+                    }
+                )
+            }
+            composable("home") {
+                HomeScreen() // La pantalla de inicio
+            }
+            composable("signup") {
+                SignUpScreen(navController = navController) // Pantalla de registro
+            }
+        }
     }
 }

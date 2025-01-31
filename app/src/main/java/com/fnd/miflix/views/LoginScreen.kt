@@ -33,7 +33,11 @@ import com.fnd.miflix.ui.theme.Purple40
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun LoginScreen(viewModel: LoginController = viewModel()){
+fun LoginScreen(
+    viewModel: LoginController = viewModel(),
+    onLoginSuccess: () -> Unit,
+    onSignUpClick: () -> Unit
+){
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -80,6 +84,12 @@ fun LoginScreen(viewModel: LoginController = viewModel()){
 
         }
 
+        uiState.successMessage?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(it, color = Purple40)
+            onLoginSuccess() // Llamar la función cuando el login sea exitoso
+        }
+
         // Mostrar mensajes de éxito o error
         uiState.successMessage?.let {
             Spacer(modifier = Modifier.height(16.dp))
@@ -88,6 +98,12 @@ fun LoginScreen(viewModel: LoginController = viewModel()){
         uiState.errorMessage?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(it, color = Purple40)
+        }
+
+        // Botón para ir a la pantalla de registro
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onSignUpClick) {
+            Text(text = "¿No tienes una cuenta? Regístrate")
         }
     }
 
