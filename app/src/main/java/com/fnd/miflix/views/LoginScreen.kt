@@ -90,11 +90,6 @@ fun LoginScreen(
             onLoginSuccess() // Llamar la función cuando el login sea exitoso
         }
 
-        // Mostrar mensajes de éxito o error
-        uiState.successMessage?.let {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(it, color = Purple40)
-        }
         uiState.errorMessage?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(it, color = Purple40)
@@ -108,4 +103,3 @@ fun LoginScreen(
     }
 
 }
-

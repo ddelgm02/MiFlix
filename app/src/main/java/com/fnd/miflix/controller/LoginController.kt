@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import com.fnd.miflix.DAO.UsuarioDao
 import org.mindrot.jbcrypt.BCrypt
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.fnd.miflix.database.AppDatabase
 
@@ -22,22 +23,24 @@ class LoginController(application: Application) : AndroidViewModel(application){
 
     // Lógica de inicio de sesión con RoomDB
     fun login(email: String, password: String) {
+
         viewModelScope.launch {
             _uiState.value = LoginUiState(isLoading = true)
 
             try {
-                // Simulación: Cambia esto por una llamada real a un backend
                 val usuario = usuarioDao.obtenerUsuarioPorCorreo(email)
 
                 if (usuario != null && BCrypt.checkpw(password.trim(), usuario.passwordHash)) {
-                    _uiState.value = LoginUiState(successMessage = "¡Inicio de sesión exitoso!")
+                    _uiState.value = LoginUiState(
+                        successMessage = "¡Inicio de sesión exitoso!"
+                    )
                 } else {
                     _uiState.value = LoginUiState(errorMessage = "Correo o contraseña inválidas")
                 }
             } catch (e: Exception) {
                 _uiState.value = LoginUiState(errorMessage = "Error inesperado: ${e.message}")
             } finally {
-                _uiState.value = LoginUiState(isLoading = false)
+                _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
     }
