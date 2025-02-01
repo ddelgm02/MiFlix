@@ -4,15 +4,15 @@ import androidx.room.*
 import org.mindrot.jbcrypt.BCrypt
 
 // Entidad Usuarios
-@Entity (tableName = "Usuarios",
-        indices = [Index(value = ["correo"], unique = true)]
+@Entity (tableName = "Users",
+        indices = [Index(value = ["email"], unique = true)]
 )
-data class Usuario(
+data class User(
     @PrimaryKey (autoGenerate = true) val id: Int,
-    val nombre: String,
-    val correo: String,
+    val name: String,
+    val email: String,
     val passwordHash: String,
-    val fechaCreacion: Long = System.currentTimeMillis(),
+    val creationDate: Long = System.currentTimeMillis(),
     val admin: Boolean = false
 )
 {
