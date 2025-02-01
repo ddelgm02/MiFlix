@@ -6,7 +6,7 @@ import androidx.room.*
     tableName = "ContenidoSeguido",
     foreignKeys = [
         ForeignKey(
-            entity = Perfil::class,
+            entity = User::class,
             parentColumns = ["id"],
             childColumns = ["perfilId"],
             onDelete = ForeignKey.CASCADE
