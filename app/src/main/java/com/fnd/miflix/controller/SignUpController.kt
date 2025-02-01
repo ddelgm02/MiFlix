@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.mindrot.jbcrypt.BCrypt
-import com.fnd.miflix.models.Usuario
+import com.fnd.miflix.models.User
 
 class SignUpController(application: Application) : AndroidViewModel(application) {
 
@@ -25,22 +25,22 @@ class SignUpController(application: Application) : AndroidViewModel(application)
 
             try {
                 // Verificar si el usuario ya existe
-                val existingUser = usuarioDao.obtenerUsuarioPorCorreo(email)
+                val existingUser = usuarioDao.getUsersByEmail(email)
 
                 if (existingUser != null) {
                     _uiState.value = SignUpUiState(errorMessage = "El usuario ya existe")
                 } else {
                     // Crear el nuevo usuario
                     val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt())
-                    val newUser = Usuario(
+                    val newUser = User(
                         id = 0,
-                        nombre = name,
-                        correo = email,
-                        passwordHash = hashedPassword
+                        name = name,
+                        email = email,
+                        passwordHash = hashedPassword,
                     )
 
                     // Guardar el usuario en la base de datos
-                    usuarioDao.insertarUsuario(newUser)
+                    usuarioDao.register(newUser)
 
                     _uiState.value = SignUpUiState(successMessage = "¡Registro exitoso!")
                 }

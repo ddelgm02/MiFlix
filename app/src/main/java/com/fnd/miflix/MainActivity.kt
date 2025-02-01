@@ -15,12 +15,11 @@ import com.fnd.miflix.views.HomeScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.fnd.miflix.controller.LoginController
 import androidx.activity.viewModels
+import androidx.lifecycle.AndroidViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 
 class MainActivity : ComponentActivity() {
-
-    private val loginController: LoginController by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

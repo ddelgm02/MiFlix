@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ContentDao {
     @Query("SELECT * FROM content")
-    fun getAllContent(): Flow<List<ContentEntity>>
+    fun getAlslContent(): Flow<List<ContentEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertContent(content: List<ContentEntity>)

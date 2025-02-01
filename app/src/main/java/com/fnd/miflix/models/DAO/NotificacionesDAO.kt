@@ -1,4 +1,4 @@
-package com.fnd.miflix.DAO
+package com.fnd.miflix.models.DAO
 
 import androidx.room.Dao
 

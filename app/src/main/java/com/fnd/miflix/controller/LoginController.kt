@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import com.fnd.miflix.DAO.UsuarioDao
+import com.fnd.miflix.models.DAO.UserDao
 import org.mindrot.jbcrypt.BCrypt
 import android.app.Application
 import android.util.Log
@@ -15,7 +15,7 @@ import com.fnd.miflix.database.AppDatabase
 
 class LoginController(application: Application) : AndroidViewModel(application){
 
-    private val usuarioDao = AppDatabase.getDatabase(application).usuariosDao()
+    private val userDao: UserDao = AppDatabase.getDatabase(application).usuariosDao()
 
     // Estado de la UI
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -28,7 +28,7 @@ class LoginController(application: Application) : AndroidViewModel(application){
             _uiState.value = LoginUiState(isLoading = true)
 
             try {
-                val usuario = usuarioDao.obtenerUsuarioPorCorreo(email)
+                val usuario = userDao.getUsersByEmail(email)
 
                 if (usuario != null && BCrypt.checkpw(password.trim(), usuario.passwordHash)) {
                     _uiState.value = LoginUiState(
