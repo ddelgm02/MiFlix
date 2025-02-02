@@ -21,7 +21,7 @@ class LoginController(application: Application) : AndroidViewModel(application){
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     // Lógica de inicio de sesión con RoomDB
-    fun login(email: String, password: String) {
+    fun login(email: String, password: String, onLoginSuccess: (User) -> Unit) {
 
         viewModelScope.launch {
             _uiState.value = LoginUiState(isLoading = true)
@@ -31,8 +31,9 @@ class LoginController(application: Application) : AndroidViewModel(application){
 
                 if (usuario != null && BCrypt.checkpw(password.trim(), usuario.passwordHash)) {
                     _uiState.value = LoginUiState(
-                        successMessage = "¡Inicio de sesión exitoso!"
+                        successMessage = "¡Inicio de sesión exitoso!",
                     )
+                    onLoginSuccess(usuario)
                 } else {
                     _uiState.value = LoginUiState(errorMessage = "Correo o contraseña inválidas")
                 }

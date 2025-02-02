@@ -31,14 +31,14 @@ import com.fnd.miflix.R
 import com.fnd.miflix.controller.LoginController
 import com.fnd.miflix.ui.theme.Purple40
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fnd.miflix.models.User
 
 @Composable
 fun LoginScreen(
     viewModel: LoginController = viewModel(),
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (User) -> Unit,
     onSignUpClick: () -> Unit
-){
-
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
@@ -47,8 +47,12 @@ fun LoginScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ){
-        Image(painter = painterResource(id = R.drawable.applogin), contentDescription = "Login Image", modifier = Modifier.size(300.dp))
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.applogin),
+            contentDescription = "Login Image",
+            modifier = Modifier.size(300.dp)
+        )
         Text(text = "Bienvenido a MiFlix", fontSize = 35.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = "Iniciar Sesión en tu cuenta")
@@ -62,16 +66,21 @@ fun LoginScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = password, onValueChange = {
-            password = it
-        }, label = {
-            Text(text = "Password")
-        }, visualTransformation = PasswordVisualTransformation())
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text(text = "Password") },
+            visualTransformation = PasswordVisualTransformation()
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            Log.i("Credentials", "Email : $email  Password : $password")
-            viewModel.login(email, password)
+            Log.i("Credentials", "Email: $email  Password: $password")
+            viewModel.login(email, password) { usuario ->
+                onLoginSuccess(usuario) // Se pasa el usuario autenticado a la función de éxito
+            }
         }) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(
@@ -81,15 +90,15 @@ fun LoginScreen(
             } else {
                 Text("Iniciar sesión")
             }
-
         }
 
+        // Mensaje de éxito
         uiState.successMessage?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(it, color = Purple40)
-            onLoginSuccess() // Llamar la función cuando el login sea exitoso
         }
 
+        // Mensaje de error
         uiState.errorMessage?.let {
             Spacer(modifier = Modifier.height(16.dp))
             Text(it, color = Purple40)
@@ -101,5 +110,5 @@ fun LoginScreen(
             Text(text = "¿No tienes una cuenta? Regístrate")
         }
     }
-
 }
+

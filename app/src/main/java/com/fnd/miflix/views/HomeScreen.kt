@@ -34,8 +34,13 @@ import com.fnd.miflix.models.User
 
 
 @Composable
-fun HomeScreen(moviesController: MoviesController = viewModel(), usuario: User, navController: NavController) {
+fun HomeScreen(
+    moviesController: MoviesController = viewModel(),
+    usuario: User,
+    navController: NavController
+) {
     val moviesList by moviesController.movies.observeAsState(initial = emptyList())
+
     LaunchedEffect(Unit) {
         moviesController.fetchPopularMovies()
     }
@@ -55,7 +60,7 @@ fun HomeScreen(moviesController: MoviesController = viewModel(), usuario: User, 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Barra de navegación personalizada usando Row
+        // Barra de navegación
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -70,13 +75,13 @@ fun HomeScreen(moviesController: MoviesController = viewModel(), usuario: User, 
                 fontWeight = FontWeight.Bold
             )
 
-            // Icono de búsqueda
-            IconButton(onClick = { /* Aquí puedes agregar la lógica de búsqueda */ }) {
+            /* Icono de búsqueda
+            IconButton(onClick = {}) {
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Buscar"
                 )
-            }
+            }*/
         }
 
         Spacer(modifier = Modifier.height(16.dp))
