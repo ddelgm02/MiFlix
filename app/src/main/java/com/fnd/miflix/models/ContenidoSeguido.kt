@@ -1,21 +1,27 @@
 package com.fnd.miflix.models
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
 
 @Entity(
     tableName = "ContenidoSeguido",
+    primaryKeys = ["userId", "contentId"],
     foreignKeys = [
         ForeignKey(
             entity = User::class,
             parentColumns = ["id"],
-            childColumns = ["perfilId"],
+            childColumns = ["userId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = ContentEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["contentId"],
             onDelete = ForeignKey.CASCADE
         )
-    ],
-    indices = [Index(value = ["perfilId"])],
-    primaryKeys = ["perfilId", "contenidoId"]
+    ]
 )
 data class ContenidoSeguido(
-    val perfilId: Int,
-    val contenidoId: Int      // ID del contenido seguido (referencia al catálogo de la API)
+    val userId: Int,
+    val contentId: Int
 )
