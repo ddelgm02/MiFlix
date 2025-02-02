@@ -1,6 +1,8 @@
 package com.fnd.miflix.views
 
+import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,16 +37,10 @@ import com.fnd.miflix.models.User
 
 @Composable
 fun HomeScreen(
-    moviesController: MoviesController = viewModel(),
     usuario: User,
-    navController: NavController
+    navController: NavController,
+    moviesList: List<Movie> // Recibimos la lista de películas
 ) {
-    val moviesList by moviesController.movies.observeAsState(initial = emptyList())
-
-    LaunchedEffect(Unit) {
-        moviesController.fetchPopularMovies()
-    }
-
     var searchQuery by remember { mutableStateOf("") }
 
     // Filtramos la lista solo cuando cambia la búsqueda
@@ -74,14 +70,6 @@ fun HomeScreen(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
-
-            /* Icono de búsqueda
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Buscar"
-                )
-            }*/
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -97,13 +85,17 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Verificamos si hay películas en la lista filtrada
+        if (filteredMovies.isEmpty()) {
+            Text(text = "No se encontraron películas.", color = Color.Gray)
+        }
+
         // LazyColumn para mostrar la lista de películas filtrada
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Aseguramos que el índice nunca se salga del tamaño de la lista filtrada
             items(filteredMovies.size) { index ->
-                MovieItem(movie = filteredMovies[index])
+                MovieItem(movie = filteredMovies[index], navController = navController)
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
@@ -112,16 +104,13 @@ fun HomeScreen(
             Button(onClick = { navController.navigate("admin") }) {
                 Text("Gestionar Usuarios")
             }
-        } else {
-            Text("Eres un usuario normal.")
         }
     }
 }
 
 
-
 @Composable
-fun MovieItem(movie: Movie) {
+fun MovieItem(movie: Movie, navController: NavController) {
     var isLiked by remember { mutableStateOf(false) } // Estado del "me gusta"
 
     Row(
@@ -146,10 +135,15 @@ fun MovieItem(movie: Movie) {
         Column(
             modifier = Modifier.weight(1f)
         ) {
+            // Título de la película con acción de navegación
             Text(
                 text = movie.title,
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
+                fontSize = 18.sp,
+                modifier = Modifier.clickable {
+                    // Navegar a la pantalla de detalles
+                    navController.navigate("movie_details/${movie.id}")
+                }
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -171,6 +165,7 @@ fun MovieItem(movie: Movie) {
         }
     }
 }
+
 
 
 /*@Composable

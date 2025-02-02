@@ -6,5 +6,7 @@ data class Movie(
     val id: Int,
     val title: String,
     @SerializedName("poster_path") val posterPath: String,
-    val overview: String
+    val overview: String,
+    val release_date: String,
+    val vote_average: Double
 )

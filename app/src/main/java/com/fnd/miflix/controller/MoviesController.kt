@@ -20,14 +20,16 @@ class MoviesController : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = RetrofitClient.movieApi.getPopularMovies()
+                Log.d("MoviesController", "Response: ${response.results}") // Agregar un log aquí
                 _movies.postValue(response.results)
             } catch (e: Exception) {
                 // Maneja el error (por ejemplo, mostrando un mensaje)
-                Log.e("MoviesViewModel", "Error fetching movies", e)
+                Log.e("MoviesController", "Error fetching movies", e)
             }
         }
     }
 }
+
 
 
 
