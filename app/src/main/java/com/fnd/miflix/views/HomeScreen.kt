@@ -52,8 +52,8 @@ fun HomeScreen(moviesController: MoviesController = viewModel()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            items(moviesList) { movie ->
-                MovieItem(movie = movie)
+            items(moviesList.size) { index ->
+                MovieItem(movie = moviesList[index])
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
