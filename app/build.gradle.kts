@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+val tmdbApiKey: String = project.findProperty("tmdbApiKey") as? String ?: ""
 android {
     namespace = "com.fnd.miflix"
     compileSdk = 35
@@ -56,6 +57,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.runtime.saved.instance.state)
+    implementation(libs.androidx.runtime.livedata)
 
     // Testing
     testImplementation(libs.junit)
@@ -99,7 +102,12 @@ dependencies {
     //BCrypt
     implementation(libs.bcrypt)
 
-    //ViewModel
+    // Retrofit para las llamadas a la API
+    implementation(libs.retrofit)
+    // Converter para parsear JSON a objetos Kotlin
+    implementation(libs.converter.gson)
+
+    implementation(libs.coil.compose)
 
 }
 

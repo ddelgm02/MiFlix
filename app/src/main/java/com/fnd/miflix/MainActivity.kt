@@ -13,9 +13,6 @@ import com.fnd.miflix.views.LoginScreen
 import com.fnd.miflix.views.SignUpScreen
 import com.fnd.miflix.views.HomeScreen
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.fnd.miflix.controller.LoginController
-import androidx.activity.viewModels
-import androidx.lifecycle.AndroidViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 
