@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.fnd.miflix.controller.MoviesController
@@ -29,6 +28,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.graphics.Color
+import com.fnd.miflix.controller.LoginController
+import com.fnd.miflix.models.User
 
 
 @Composable
@@ -151,6 +152,38 @@ fun MovieItem(movie: Movie) {
                 contentDescription = if (isLiked) "Quitar de favoritos" else "Añadir a favoritos",
                 tint = if (isLiked) Color.Red else Color.Gray // Cambia el color
             )
+        }
+    }
+}
+
+
+@Composable
+fun HomeScreen(loginController: LoginController, usuario: User){
+    var esAdmin by remember { mutableStateOf(usuario.admin) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Bienvenido, ${usuario.name}!", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = if (esAdmin) "Estás en modo ADMINISTRADOR" else "Estás en modo USUARIO",
+            fontSize = 18.sp,
+            color = if (esAdmin) Color.Red else Color.Blue
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = {
+            loginController.cambiarRol(usuario)
+            esAdmin = usuario.admin // Actualizar la UI
+        }) {
+            Text(if (esAdmin) "Cambiar a Modo Usuario" else "Cambiar a Modo Admin")
         }
     }
 }
