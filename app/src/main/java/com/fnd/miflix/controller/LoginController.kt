@@ -1,6 +1,5 @@
 package com.fnd.miflix.controller
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,9 +8,9 @@ import kotlinx.coroutines.launch
 import com.fnd.miflix.models.DAO.UserDao
 import org.mindrot.jbcrypt.BCrypt
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.fnd.miflix.database.AppDatabase
+import com.fnd.miflix.models.User
 
 class LoginController(application: Application) : AndroidViewModel(application){
 
@@ -43,6 +42,11 @@ class LoginController(application: Application) : AndroidViewModel(application){
                 _uiState.value = _uiState.value.copy(isLoading = false)
             }
         }
+    }
+
+    //Cambiar a rol Admin
+    fun cambiarRol(usuario: User) {
+        usuario.admin = !usuario.admin // Alterna entre usuario y admin
     }
 }
 

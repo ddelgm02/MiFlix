@@ -13,7 +13,7 @@ data class User(
     val email: String,
     val passwordHash: String,
     val creationDate: Long = System.currentTimeMillis(),
-    val admin: Boolean = false
+    var admin: Boolean //= false
 )
 {
     // Método para verificar la contraseña
