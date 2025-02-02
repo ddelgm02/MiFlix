@@ -5,11 +5,12 @@ import androidx.room.*
 import com.fnd.miflix.models.User
 import com.fnd.miflix.models.Notificacion
 import com.fnd.miflix.models.ContenidoSeguido
+import com.fnd.miflix.models.ContentEntity
 import com.fnd.miflix.models.DAO.NotificacionesDAO
 import com.fnd.miflix.models.DAO.ContenidoSeguidoDAO
 import com.fnd.miflix.models.DAO.UserDao
 
-@Database(entities = [User::class, Notificacion::class, ContenidoSeguido::class], version = 3, exportSchema = false)
+@Database(entities = [User::class, Notificacion::class, ContenidoSeguido::class, ContentEntity::class], version = 4, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun usuariosDao(): UserDao

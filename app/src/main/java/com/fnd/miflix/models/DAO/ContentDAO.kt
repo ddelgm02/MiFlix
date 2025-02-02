@@ -14,4 +14,5 @@ interface ContentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertContent(content: List<ContentEntity>)
+
 }

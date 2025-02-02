@@ -37,6 +37,7 @@ class SignUpController(application: Application) : AndroidViewModel(application)
                         name = name,
                         email = email,
                         passwordHash = hashedPassword,
+                        admin = false
                     )
 
                     // Guardar el usuario en la base de datos
