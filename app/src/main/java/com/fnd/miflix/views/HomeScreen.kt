@@ -4,12 +4,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +23,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.fnd.miflix.controller.MoviesController
 import com.fnd.miflix.models.Movie
+import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.ui.graphics.Color
 
 
 @Composable
@@ -62,12 +67,15 @@ fun HomeScreen(moviesController: MoviesController = viewModel()) {
 
 @Composable
 fun MovieItem(movie: Movie) {
+    var isLiked by remember { mutableStateOf(false) } // Estado del "me gusta"
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // Utilizamos Coil para cargar la imagen del poster
+        // Imagen de la película
         Image(
             painter = rememberImagePainter(
                 data = "https://image.tmdb.org/t/p/w500${movie.posterPath}"
@@ -78,7 +86,11 @@ fun MovieItem(movie: Movie) {
                 .clip(RoundedCornerShape(8.dp))
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Column(modifier = Modifier.fillMaxWidth()) {
+
+        // Información de la película
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Text(
                 text = movie.title,
                 fontWeight = FontWeight.Bold,
@@ -89,6 +101,17 @@ fun MovieItem(movie: Movie) {
                 text = movie.overview,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        // Botón de "Me gusta"
+        IconButton(
+            onClick = { isLiked = !isLiked } // Cambia el estado al hacer clic
+        ) {
+            Icon(
+                imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = if (isLiked) "Quitar de favoritos" else "Añadir a favoritos",
+                tint = if (isLiked) Color.Red else Color.Gray // Cambia el color
             )
         }
     }
