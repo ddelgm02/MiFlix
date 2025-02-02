@@ -57,7 +57,11 @@ class MainActivity : ComponentActivity() {
                 )
             }
             composable("home") {
-                HomeScreen() // La pantalla de inicio
+                HomeScreen(
+                    moviesController = TODO(),
+                    usuario = TODO(),
+                    navController = TODO()
+                ) // La pantalla de inicio
             }
             composable("signup") {
                 SignUpScreen(navController = navController) // Pantalla de registro

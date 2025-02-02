@@ -28,12 +28,13 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
 import com.fnd.miflix.controller.LoginController
 import com.fnd.miflix.models.User
 
 
 @Composable
-fun HomeScreen(moviesController: MoviesController = viewModel()) {
+fun HomeScreen(moviesController: MoviesController = viewModel(), usuario: User, navController: NavController) {
     val moviesList by moviesController.movies.observeAsState(initial = emptyList())
     LaunchedEffect(Unit) {
         moviesController.fetchPopularMovies()
@@ -50,7 +51,9 @@ fun HomeScreen(moviesController: MoviesController = viewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         // Barra de navegación personalizada usando Row
         Row(
@@ -98,6 +101,14 @@ fun HomeScreen(moviesController: MoviesController = viewModel()) {
                 MovieItem(movie = filteredMovies[index])
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
+        }
+
+        if (usuario.admin) {
+            Button(onClick = { navController.navigate("admin") }) {
+                Text("Gestionar Usuarios")
+            }
+        } else {
+            Text("Eres un usuario normal.")
         }
     }
 }
@@ -157,7 +168,7 @@ fun MovieItem(movie: Movie) {
 }
 
 
-@Composable
+/*@Composable
 fun HomeScreen(loginController: LoginController, usuario: User){
     var esAdmin by remember { mutableStateOf(usuario.admin) }
 
@@ -186,4 +197,4 @@ fun HomeScreen(loginController: LoginController, usuario: User){
             Text(if (esAdmin) "Cambiar a Modo Usuario" else "Cambiar a Modo Admin")
         }
     }
-}
+}*/

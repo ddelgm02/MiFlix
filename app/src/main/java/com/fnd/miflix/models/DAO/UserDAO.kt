@@ -20,5 +20,8 @@ interface UserDao {
     @Query("SELECT * FROM Users")
     fun getAllUsers(): List<User>
 
+    @Query("UPDATE Users SET admin = :esAdmin WHERE email = :email")
+    suspend fun actualizarRol(email: String, esAdmin: Boolean)
+
 }
 
