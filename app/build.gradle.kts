@@ -60,6 +60,11 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.androidx.runtime.saved.instance.state)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation("androidx.navigation:navigation-compose:2.8.6")
 
     // Testing
     testImplementation(libs.junit)
