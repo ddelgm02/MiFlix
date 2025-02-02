@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.messaging)
     implementation(libs.androidx.runtime.saved.instance.state)
     implementation(libs.androidx.runtime.livedata)
 
