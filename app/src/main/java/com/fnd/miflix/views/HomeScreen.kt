@@ -26,18 +26,24 @@ import com.fnd.miflix.models.Movie
 import androidx.compose.runtime.remember
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.ui.graphics.Color
 
 
 @Composable
 fun HomeScreen(moviesController: MoviesController = viewModel()) {
-    // Observa el LiveData y provee una lista vacía como valor inicial
     val moviesList by moviesController.movies.observeAsState(initial = emptyList())
-
-    // Lanza la carga de películas solo una vez al componer la pantalla
     LaunchedEffect(Unit) {
         moviesController.fetchPopularMovies()
+    }
+
+    var searchQuery by remember { mutableStateOf("") }
+
+    // Filtramos la lista solo cuando cambia la búsqueda
+    val filteredMovies = moviesList.filter {
+        it.title.contains(searchQuery, ignoreCase = true) ||
+                it.overview.contains(searchQuery, ignoreCase = true)
     }
 
     Column(
@@ -45,25 +51,57 @@ fun HomeScreen(moviesController: MoviesController = viewModel()) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Bienvenido",
-            fontSize = 35.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        // Barra de navegación personalizada usando Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Título
+            Text(
+                text = "MiFlix",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            // Icono de búsqueda
+            IconButton(onClick = { /* Aquí puedes agregar la lógica de búsqueda */ }) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Buscar"
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        // LazyColumn para mostrar la lista de películas
+        // Barra de búsqueda
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { query -> searchQuery = query },
+            label = { Text("Buscar película o serie") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // LazyColumn para mostrar la lista de películas filtrada
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            items(moviesList.size) { index ->
-                MovieItem(movie = moviesList[index])
+            // Aseguramos que el índice nunca se salga del tamaño de la lista filtrada
+            items(filteredMovies.size) { index ->
+                MovieItem(movie = filteredMovies[index])
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
     }
 }
+
+
 
 @Composable
 fun MovieItem(movie: Movie) {
