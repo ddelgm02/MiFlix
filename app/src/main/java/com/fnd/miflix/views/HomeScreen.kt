@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
@@ -37,38 +38,28 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     usuario: User,
     navController: NavController,
-    moviesList: List<ContentEntity>,
-    moviesController: MoviesController
+    moviesController: MoviesController,
+    moviesList: List<ContentEntity>
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    val movies by moviesController.movies.observeAsState(emptyList()) // Observar LiveData
+    val scope = rememberCoroutineScope()
 
-    val filteredMovies = moviesList.filter {
-        it.title.contains(searchQuery, ignoreCase = true) ||
-                it.overview.contains(searchQuery, ignoreCase = true)
-    }
+    // Determinar qué lista mostrar
+    val displayMovies = if (searchQuery.isEmpty()) moviesList else movies
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Barra de navegación
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Título
-            Text(
-                text = "MiFlix",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        // Título
+        Text(
+            text = "MiFlix",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -77,10 +68,14 @@ fun HomeScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
         // Barra de búsqueda
         OutlinedTextField(
             value = searchQuery,
-            onValueChange = { query -> searchQuery = query },
+            onValueChange = { query ->
+                searchQuery = query
+                moviesController.buscarPeliculas(query) // Buscar solo si hay texto
+            },
             label = { Text("Buscar película o serie") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
@@ -88,21 +83,30 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Verificamos si hay películas en la lista filtrada
-        if (filteredMovies.isEmpty()) {
-            Text(text = "No se encontraron películas.", color = Color.Gray)
+        // Mensajes de estado
+        when {
+            searchQuery.isNotEmpty() && movies.isEmpty() -> {
+                Text(text = "No se encontraron películas.", color = Color.Gray)
+            }
+            searchQuery.isEmpty() && moviesList.isEmpty() -> {
+                Text(text = "No hay contenido disponible.", color = Color.Gray)
+            }
         }
 
-        // LazyColumn para mostrar la lista de películas filtrada
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(filteredMovies.size) { index ->
-                MovieItem(movie = filteredMovies[index], navController = navController, usuario = usuario, moviesController = moviesController)
+        // Mostrar la lista de películas
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(displayMovies.size) { index ->
+                MovieItem(
+                    movie = displayMovies[index],
+                    navController = navController,
+                    usuario = usuario,
+                    moviesController = moviesController
+                )
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
 
+        // Botón de gestión solo visible para administradores
         if (usuario.admin) {
             Button(onClick = { navController.navigate("admin") }) {
                 Text("Gestionar Usuarios")
@@ -112,12 +116,13 @@ fun HomeScreen(
 }
 
 
+
 @Composable
 fun MovieItem(
     movie: ContentEntity,
     navController: NavController,
     usuario: User,
-    moviesController: MoviesController // Asegúrate de pasar el controlador
+    moviesController: MoviesController
 ) {
     var isLiked by remember { mutableStateOf(false) }
 
@@ -126,7 +131,7 @@ fun MovieItem(
         isLiked = contenidoSeguido != null // Si el contenido está en la base de datos, marcamos el "Me gusta"
     }
 
-    val scope = rememberCoroutineScope() // Usar rememberCoroutineScope para obtener un scope
+    val scope = rememberCoroutineScope()
 
     Row(
         modifier = Modifier

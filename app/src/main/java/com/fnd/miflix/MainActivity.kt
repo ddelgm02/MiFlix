@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if (usuario != null) {
-                    HomeScreen(usuario = usuario!!, navController = navController, moviesList = moviesList, moviesController = moviesController)
+                    HomeScreen(usuario = usuario!!, navController = navController, moviesController = moviesController, moviesList = moviesList)
                 }
             }
             composable("signup") {
@@ -106,6 +106,10 @@ class MainActivity : ComponentActivity() {
                 // Cargar la película correspondiente a movieId
                 LaunchedEffect(movieId) {
                     movie = moviesList.firstOrNull { it.id == movieId }
+                }
+
+                LaunchedEffect(movieId) {
+                    movie = moviesController.getMovieById(movieId)
                 }
 
                 // Esperar a que tanto el usuario como la película estén disponibles
