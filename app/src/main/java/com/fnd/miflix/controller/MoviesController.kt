@@ -53,6 +53,13 @@ class MoviesController (application: Application) : AndroidViewModel(application
         // Lógica para eliminar la película de la base de datos como seguida por el usuario
         contenidoSeguidoDao.removeContenidoSeguido(userId, movieId)
     }
+
+    suspend fun getAllContenidosSeguidos(userId: Int): List<ContentEntity> {
+        return contenidoSeguidoDao.getAllContenidosSeguidos(userId)
+            .mapNotNull { contenidoSeguido ->
+                contentDao.getContentById(contenidoSeguido.contentId) // Buscar el contenido real
+            }
+    }
 }
 
 

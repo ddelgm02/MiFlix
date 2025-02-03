@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fnd.miflix.controller.MoviesController
 import com.fnd.miflix.models.ContentEntity
+import com.fnd.miflix.views.FollowingScreen
 import com.fnd.miflix.views.MovieDetailScreen
 
 class MainActivity : ComponentActivity() {
@@ -101,6 +102,18 @@ class MainActivity : ComponentActivity() {
                     MovieDetailScreen(movie = movie, navController = navController, user = usuario, moviesController = moviesController)
                 }
             }
+            composable("following/{email}") {backStackEntry ->
+                var usuario by remember { mutableStateOf<User?>(null) }
+                val email = backStackEntry.arguments?.getString("email") ?: ""
+                val moviesController: MoviesController = viewModel()
+
+                LaunchedEffect(email) {
+                    usuario = userDao.getUsersByEmail(email)
+                }
+
+                FollowingScreen(usuario, navController, moviesController)
+            }
+
         }
     }
 

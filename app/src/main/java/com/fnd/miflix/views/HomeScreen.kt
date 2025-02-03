@@ -72,6 +72,11 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Button(onClick = { navController.navigate("following/${usuario.email}") }) {
+            Text("Mis Películas Seguidas")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
         // Barra de búsqueda
         OutlinedTextField(
             value = searchQuery,
