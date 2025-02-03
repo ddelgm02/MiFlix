@@ -4,13 +4,21 @@ import androidx.room.*
 import com.fnd.miflix.models.ContenidoSeguido
 
 @Dao
-interface ContenidoSeguidoDAO {
-    @Query("SELECT contentId FROM ContenidoSeguido WHERE userId = :userId")
-    suspend fun getFavoriteContentIds(userId: Int): List<Int>
+interface ContenidoSeguidoDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE) //Evita que los contenidos se dupliquen
-    suspend fun addFavorite(content: ContenidoSeguido)
+    // Insertar un nuevo contenido seguido
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertContenidoSeguido(contenidoSeguido: ContenidoSeguido)
 
+    // Comprobar si un contenido ya está seguido por el usuario
+    @Query("SELECT * FROM ContenidoSeguido WHERE userId = :userId AND contentId = :contentId")
+    suspend fun isContenidoSeguido(userId: Int, contentId: Int): ContenidoSeguido?
+
+    // Eliminar un contenido seguido (si el usuario lo quita de sus favoritos)
     @Query("DELETE FROM ContenidoSeguido WHERE userId = :userId AND contentId = :contentId")
-    suspend fun removeFavorite(userId: Int, contentId: Int)
+    suspend fun removeContenidoSeguido(userId: Int, contentId: Int)
+
+    // Obtener todos los contenidos seguidos de un usuario
+    @Query("SELECT * FROM ContenidoSeguido WHERE userId = :userId")
+    suspend fun getAllContenidosSeguidos(userId: Int): List<ContenidoSeguido>
 }

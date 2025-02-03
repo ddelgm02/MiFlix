@@ -23,5 +23,16 @@ interface UserDao {
     @Query("UPDATE Users SET admin = :esAdmin WHERE email = :email")
     suspend fun actualizarRol(email: String, esAdmin: Boolean)
 
+    @Query("SELECT * FROM Users WHERE id = :id")
+    suspend fun getUserById(id: Int): User?
+
+    // Actualizar la información del usuario (si fuera necesario)
+    @Update
+    suspend fun updateUser(user: User)
+
+    // Eliminar un usuario
+    @Delete
+    suspend fun deleteUser(user: User)
+
 }
 

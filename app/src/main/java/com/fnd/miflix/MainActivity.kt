@@ -23,7 +23,7 @@ import com.fnd.miflix.models.User
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fnd.miflix.controller.MoviesController
-import com.fnd.miflix.models.Movie
+import com.fnd.miflix.models.ContentEntity
 import com.fnd.miflix.views.MovieDetailScreen
 
 class MainActivity : ComponentActivity() {
@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NavigationHost(navController: NavHostController, userDao: UserDao, moviesList: List<Movie>) {
+    fun NavigationHost(navController: NavHostController, userDao: UserDao, moviesList: List<ContentEntity>) {
         NavHost(navController = navController, startDestination = "login") {
             composable("login") {
                 LoginScreen(
@@ -74,23 +74,31 @@ class MainActivity : ComponentActivity() {
             composable("home/{email}") { backStackEntry ->
                 val email = backStackEntry.arguments?.getString("email") ?: ""
                 var usuario by remember { mutableStateOf<User?>(null) }
-
-                LaunchedEffect(email) { // Ejecutar la función suspendida en una corrutina
+                val moviesController: MoviesController = viewModel()
+                LaunchedEffect(email) {
                     usuario = userDao.getUsersByEmail(email)
                 }
 
                 usuario?.let {
-                    HomeScreen(usuario = it, navController = navController, moviesList = moviesList)
+                    HomeScreen(usuario = it, navController = navController, moviesList = moviesList, moviesController = moviesController)
                 }
             }
             composable("signup") {
                 SignUpScreen(navController = navController)
             }
-            composable("movie_details/{movieId}") { backStackEntry ->
+            composable("movie_details/{movieId}?email={email}") { backStackEntry ->
                 val movieId = backStackEntry.arguments?.getString("movieId")?.toInt() ?: 0
-                val movie = moviesList.firstOrNull { it.id == movieId } // Obtener la película desde la lista
+                val email = backStackEntry.arguments?.getString("email") ?: ""
+                val movie = moviesList.firstOrNull { it.id == movieId }
+                var usuario by remember { mutableStateOf<User?>(null) }
+                val moviesController: MoviesController = viewModel()
+
+                LaunchedEffect(email) {
+                    usuario = userDao.getUsersByEmail(email)
+                }
+
                 if (movie != null) {
-                    MovieDetailScreen(movie = movie, navController = navController)
+                    MovieDetailScreen(movie = movie, navController = navController, user = usuario, moviesController = moviesController)
                 }
             }
         }

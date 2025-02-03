@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -20,30 +19,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberImagePainter
 import com.fnd.miflix.controller.MoviesController
-import com.fnd.miflix.models.Movie
 import androidx.compose.runtime.remember
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
-import com.fnd.miflix.controller.LoginController
+import com.fnd.miflix.models.ContentEntity
 import com.fnd.miflix.models.User
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun HomeScreen(
     usuario: User,
     navController: NavController,
-    moviesList: List<Movie> // Recibimos la lista de películas
+    moviesList: List<ContentEntity>,
+    moviesController: MoviesController
 ) {
     var searchQuery by remember { mutableStateOf("") }
 
-    // Filtramos la lista solo cuando cambia la búsqueda
     val filteredMovies = moviesList.filter {
         it.title.contains(searchQuery, ignoreCase = true) ||
                 it.overview.contains(searchQuery, ignoreCase = true)
@@ -95,7 +93,7 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             items(filteredMovies.size) { index ->
-                MovieItem(movie = filteredMovies[index], navController = navController)
+                MovieItem(movie = filteredMovies[index], navController = navController, usuario = usuario, moviesController = moviesController)
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
@@ -110,8 +108,20 @@ fun HomeScreen(
 
 
 @Composable
-fun MovieItem(movie: Movie, navController: NavController) {
-    var isLiked by remember { mutableStateOf(false) } // Estado del "me gusta"
+fun MovieItem(
+    movie: ContentEntity,
+    navController: NavController,
+    usuario: User,
+    moviesController: MoviesController // Asegúrate de pasar el controlador
+) {
+    var isLiked by remember { mutableStateOf(false) }
+
+    LaunchedEffect(movie.id, usuario.id) {
+        val contenidoSeguido = moviesController.isContenidoSeguido(usuario.id, movie.id)
+        isLiked = contenidoSeguido != null // Si el contenido está en la base de datos, marcamos el "Me gusta"
+    }
+
+    val scope = rememberCoroutineScope() // Usar rememberCoroutineScope para obtener un scope
 
     Row(
         modifier = Modifier
@@ -131,7 +141,6 @@ fun MovieItem(movie: Movie, navController: NavController) {
         )
         Spacer(modifier = Modifier.width(8.dp))
 
-        // Información de la película
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -142,7 +151,7 @@ fun MovieItem(movie: Movie, navController: NavController) {
                 fontSize = 18.sp,
                 modifier = Modifier.clickable {
                     // Navegar a la pantalla de detalles
-                    navController.navigate("movie_details/${movie.id}")
+                    navController.navigate("movie_details/${movie.id}?email=${usuario.email}")
                 }
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -155,7 +164,20 @@ fun MovieItem(movie: Movie, navController: NavController) {
 
         // Botón de "Me gusta"
         IconButton(
-            onClick = { isLiked = !isLiked } // Cambia el estado al hacer clic
+            onClick = {
+                scope.launch {
+                    // Cambiar el estado de "Me gusta" y actualizar la base de datos
+                    if (isLiked) {
+                        // Si está en favoritos, eliminarlo
+                        moviesController.removeContenidoSeguido(usuario.id, movie.id)
+                    } else {
+                        // Si no está en favoritos, agregarlo
+                        moviesController.addContenidoSeguido(usuario, movie)
+                    }
+                    // Invertir el estado del "Me gusta"
+                    isLiked = !isLiked
+                }
+            }
         ) {
             Icon(
                 imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
@@ -165,6 +187,8 @@ fun MovieItem(movie: Movie, navController: NavController) {
         }
     }
 }
+
+
 
 
 
