@@ -60,6 +60,19 @@ class MoviesController (application: Application) : AndroidViewModel(application
                 contentDao.getContentById(contenidoSeguido.contentId) // Buscar el contenido real
             }
     }
+
+    fun buscarPeliculas(query: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.movieApi.searchMovies(query = query)
+                _movies.postValue(response.results)
+                // Actualizamos el LiveData con los resultados
+            } catch (e: Exception) {
+                Log.e("MoviesController", "Error bucando peliculas", e)
+            }
+        }
+    }
+
 }
 
 

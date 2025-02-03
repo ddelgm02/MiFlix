@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 setBarColor(color = MaterialTheme.colorScheme.background)
-                NavigationHost(navController = navController, userDao, moviesList)
+                NavigationHost(navController = navController, userDao = userDao, moviesList = moviesList)
             }
         }
     }
@@ -76,12 +76,14 @@ class MainActivity : ComponentActivity() {
                 val email = backStackEntry.arguments?.getString("email") ?: ""
                 var usuario by remember { mutableStateOf<User?>(null) }
                 val moviesController: MoviesController = viewModel()
+
+                // Carga el usuario y navega a la pantalla de inicio
                 LaunchedEffect(email) {
                     usuario = userDao.getUsersByEmail(email)
                 }
 
-                usuario?.let {
-                    HomeScreen(usuario = it, navController = navController, moviesList = moviesList, moviesController = moviesController)
+                if (usuario != null) {
+                    HomeScreen(usuario = usuario!!, navController = navController, moviesList = moviesList, moviesController = moviesController)
                 }
             }
             composable("signup") {
@@ -90,19 +92,29 @@ class MainActivity : ComponentActivity() {
             composable("movie_details/{movieId}?email={email}") { backStackEntry ->
                 val movieId = backStackEntry.arguments?.getString("movieId")?.toInt() ?: 0
                 val email = backStackEntry.arguments?.getString("email") ?: ""
-                val movie = moviesList.firstOrNull { it.id == movieId }
-                var usuario by remember { mutableStateOf<User?>(null) }
-                val moviesController: MoviesController = viewModel()
 
+                // Variables de estado
+                var movie by remember { mutableStateOf<ContentEntity?>(null) }
+                var usuario by remember { mutableStateOf<User?>(null) }
+
+                val moviesController: MoviesController = viewModel()
+                // Cargar el usuario
                 LaunchedEffect(email) {
                     usuario = userDao.getUsersByEmail(email)
                 }
 
-                if (movie != null) {
-                    MovieDetailScreen(movie = movie, navController = navController, user = usuario, moviesController = moviesController)
+                // Cargar la película correspondiente a movieId
+                LaunchedEffect(movieId) {
+                    movie = moviesList.firstOrNull { it.id == movieId }
+                }
+
+                // Esperar a que tanto el usuario como la película estén disponibles
+                if (usuario != null && movie != null) {
+                    // Ahora, navega a la pantalla de detalles cuando los datos estén listos
+                    MovieDetailScreen(movie = movie!!, navController = navController, user = usuario, moviesController = moviesController)
                 }
             }
-            composable("following/{email}") {backStackEntry ->
+            composable("following/{email}") { backStackEntry ->
                 var usuario by remember { mutableStateOf<User?>(null) }
                 val email = backStackEntry.arguments?.getString("email") ?: ""
                 val moviesController: MoviesController = viewModel()
@@ -111,11 +123,12 @@ class MainActivity : ComponentActivity() {
                     usuario = userDao.getUsersByEmail(email)
                 }
 
-                FollowingScreen(usuario, navController, moviesController)
+                // Si el usuario está cargado, mostrar la pantalla de seguimiento
+                if (usuario != null) {
+                    FollowingScreen(usuario = usuario!!, navController = navController, moviesController = moviesController)
+                }
             }
-
         }
     }
-
 }
 
