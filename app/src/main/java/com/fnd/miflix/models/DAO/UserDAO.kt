@@ -15,10 +15,17 @@ interface UserDao {
     suspend fun getUsersByEmail(email: String): User?
 
     @Insert
-    suspend fun register(user: User)
+    suspend fun insertUser(user: User)
+
+    @Transaction
+    suspend fun register(user: User) {
+        val isEmpty = isDatabaseEmpty() == 0
+        user.admin = isEmpty  // Si es el primer usuario, se le asigna admin = true
+        insertUser(user)
+    }
 
     @Query("SELECT * FROM Users")
-    fun getAllUsers(): List<User>
+    suspend fun getAllUsers(): List<User>
 
     @Query("UPDATE Users SET admin = :esAdmin WHERE email = :email")
     suspend fun actualizarRol(email: String, esAdmin: Boolean)
@@ -33,6 +40,9 @@ interface UserDao {
     // Eliminar un usuario
     @Delete
     suspend fun deleteUser(user: User)
+
+    @Query("SELECT COUNT(*) FROM Users")
+    suspend fun isDatabaseEmpty(): Int
 
 }
 

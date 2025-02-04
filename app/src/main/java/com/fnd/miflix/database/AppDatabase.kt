@@ -11,7 +11,7 @@ import com.fnd.miflix.models.DAO.ContenidoSeguidoDao
 import com.fnd.miflix.models.DAO.UserDao
 import com.fnd.miflix.models.DAO.ContentDao
 
-@Database(entities = [User::class, Notificacion::class, ContenidoSeguido::class, ContentEntity::class], version = 7, exportSchema = false)
+@Database(entities = [User::class, Notificacion::class, ContenidoSeguido::class, ContentEntity::class], version = 8, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun usuariosDao(): UserDao
