@@ -68,10 +68,10 @@ fun HomeScreen(
         }
 
         // Botón de gestión solo visible para admin
-        if (!usuario.admin) {           //MOMENTANEO HASTA PODER ENTRAR EN UN USUARIO ADMIN
-            Button(onClick = { navController.navigate("admin") }) {
-                Text("Gestionar Usuarios")
-            }
+        if (usuario.admin) {           //MOMENTANEO HASTA PODER ENTRAR EN UN USUARIO ADMIN
+                Button(onClick = { navController.navigate("admin") }) {
+                    Text("Gestionar Usuarios")
+                }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

@@ -22,6 +22,7 @@ import com.fnd.miflix.models.DAO.UserDao
 import com.fnd.miflix.models.User
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.app.AdminScreen
 import com.fnd.miflix.controller.MoviesController
 import com.fnd.miflix.models.ContentEntity
 import com.fnd.miflix.views.FollowingScreen
@@ -132,6 +133,7 @@ class MainActivity : ComponentActivity() {
                     FollowingScreen(usuario = usuario!!, navController = navController, moviesController = moviesController)
                 }
             }
+            composable("admin") { AdminScreen(navController) }
         }
     }
 }
