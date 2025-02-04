@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app.AdminScreen
 import com.fnd.miflix.controller.MoviesController
 import com.fnd.miflix.models.ContentEntity
+import com.fnd.miflix.views.ContentAdminScreen
 import com.fnd.miflix.views.FollowingScreen
 import com.fnd.miflix.views.MovieDetailScreen
 
@@ -134,6 +135,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             composable("admin") { AdminScreen(navController) }
+            composable("contentAdmin") { ContentAdminScreen(navController) }
         }
     }
 }
