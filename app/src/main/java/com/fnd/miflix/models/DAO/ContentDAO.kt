@@ -1,11 +1,12 @@
 package com.fnd.miflix.models.DAO
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.fnd.miflix.models.ContentEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ContentDao {
@@ -20,5 +21,11 @@ interface ContentDao {
     // Obtener todos los contenidos
     @Query("SELECT * FROM content")
     suspend fun getAllContent(): List<ContentEntity>
+
+    @Update
+    suspend fun updateContent(content: ContentEntity)
+
+    @Delete
+    suspend fun deleteContent(content: ContentEntity)
 
 }
