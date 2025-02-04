@@ -67,6 +67,13 @@ fun HomeScreen(
             Text("Mis Películas Seguidas")
         }
 
+        // Botón de gestión solo visible para admin
+        if (!usuario.admin) {           //MOMENTANEO HASTA PODER ENTRAR EN UN USUARIO ADMIN
+            Button(onClick = { navController.navigate("admin") }) {
+                Text("Gestionar Usuarios")
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // Barra de búsqueda
@@ -103,13 +110,6 @@ fun HomeScreen(
                     moviesController = moviesController
                 )
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
-            }
-        }
-
-        // Botón de gestión solo visible para administradores
-        if (usuario.admin) {
-            Button(onClick = { navController.navigate("admin") }) {
-                Text("Gestionar Usuarios")
             }
         }
     }
