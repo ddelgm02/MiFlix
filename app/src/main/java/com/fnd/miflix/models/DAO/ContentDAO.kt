@@ -28,4 +28,9 @@ interface ContentDao {
     @Delete
     suspend fun deleteContent(content: ContentEntity)
 
+    @Query("DELETE FROM content WHERE id = :contentId")
+    suspend fun deleteContentById(contentId: Int)
+
+
+
 }

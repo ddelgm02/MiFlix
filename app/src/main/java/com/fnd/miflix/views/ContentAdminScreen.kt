@@ -1,37 +1,35 @@
-@file:Suppress("UNREACHABLE_CODE")
-
 package com.fnd.miflix.views
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.example.app.AdminScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.fnd.miflix.controller.AdminController
 import com.fnd.miflix.models.Content
 import com.fnd.miflix.models.ContentEntity
-import com.fnd.miflix.models.DAO.ContentDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun ContentAdminScreen(navController: NavHostController) {
-    // Simulamos una lista de contenido
-    val contentList = remember { mutableStateOf(mutableListOf<Content>()) }
-    val showEditForm = remember { mutableStateOf(false) }
-    val selectedContent = remember { mutableStateOf<Content.Movie?>(null) }
+fun ContentAdminScreen(
+    navController: NavController,
+    adminController: AdminController = viewModel()
+) {
+    val contents by adminController.contents.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+
+    var showEditForm by remember { mutableStateOf(false) }
+    var selectedContent by remember { mutableStateOf<ContentEntity?>(null) }
+
+    // Obtener contenido al cargar la pantalla
+    LaunchedEffect(Unit) {
+        adminController.fetchAllcontent()
+    }
 
     Column(
         modifier = Modifier
@@ -42,27 +40,27 @@ fun ContentAdminScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Mostrar el contenido
-        contentList.value.forEach { content ->
+        // Mostrar lista de contenidos
+        contents.forEach { content ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(content.title, modifier = Modifier.weight(1f))
+
                 Button(onClick = {
-                    //selectedContent.value = content
-                    showEditForm.value = true
+                    selectedContent = content
+                    showEditForm = true
                 }) {
                     Text("Editar")
                 }
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 Button(onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        /*ContentDao.deleteContent(ContentEntity.fromMovie(content)) // Convertir a ContentEntity
-                        // Actualizar la lista de contenido en el hilo principal
-                        contentList.value = contentList.value.filter { it.id != content.id }*/
+                    coroutineScope.launch {
+                        adminController.deleteContent(content.id)
                     }
-                    contentList.value.remove(content)
                 }) {
                     Text("Eliminar")
                 }
@@ -70,21 +68,18 @@ fun ContentAdminScreen(navController: NavHostController) {
             Divider(modifier = Modifier.padding(vertical = 8.dp))
         }
 
-        if (showEditForm.value && selectedContent.value != null) {
+        // Formulario de edición si se selecciona un contenido
+        if (showEditForm && selectedContent != null) {
             EditContentForm(
-                content = selectedContent.value!!,
+                content = selectedContent!!,
                 onSave = { updatedContent ->
-                    // Guardar el contenido actualizado en la base de datos
-                    CoroutineScope(Dispatchers.IO).launch {
-                        /*ContentDao.updateContent(ContentEntity.fromMovie(updatedContent))
-                        contentList.value = contentList.value.map {
-                            if (it.id == updatedContent.id) updatedContent else it
-                        }*/
+                    coroutineScope.launch {
+                        adminController.updateContent(updatedContent)
                     }
-                    showEditForm.value = false // Cerrar el formulario
+                    showEditForm = false
                 },
                 onCancel = {
-                    showEditForm.value = false // Cerrar el formulario sin guardar
+                    showEditForm = false
                 }
             )
         }
@@ -92,35 +87,15 @@ fun ContentAdminScreen(navController: NavHostController) {
 }
 
 @Composable
-fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") {
-            HomeScreen(
-                navController = navController,
-                usuario = TODO(),
-                moviesController = TODO(),
-                moviesList = TODO()
-            )
-        }
-        composable("admin") {
-            AdminScreen(navController = navController)
-        }
-        composable("contentAdmin") {
-            ContentAdminScreen(navController = navController)
-        }
-    }
-}
-
-@Composable
 fun EditContentForm(
-    content: Content.Movie,
-    onSave: (Content.Movie) -> Unit,
+    content: ContentEntity,
+    onSave: (ContentEntity) -> Unit,
     onCancel: () -> Unit
 ) {
-    val title = remember { mutableStateOf(content.title) }
-    val overview = remember { mutableStateOf(content.overview) }
-    val posterPath = remember { mutableStateOf(content.posterPath) }
-    val releaseDate = remember { mutableStateOf(content.releaseDate) }
+    var title by remember { mutableStateOf(content.title) }
+    var overview by remember { mutableStateOf(content.overview) }
+    var posterPath by remember { mutableStateOf(content.posterPath) }
+    var releaseDate by remember { mutableStateOf(content.release_date) }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Editar Contenido", fontSize = 24.sp)
@@ -128,39 +103,36 @@ fun EditContentForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
-            value = title.value,
-            onValueChange = { title.value = it },
+            value = title,
+            onValueChange = { title = it },
             label = { Text("Título") }
         )
         TextField(
-            value = overview.value,
-            onValueChange = { overview.value = it },
+            value = overview,
+            onValueChange = { overview = it },
             label = { Text("Descripción") }
         )
         TextField(
-            value = posterPath.value,
-            onValueChange = { posterPath.value = it },
+            value = posterPath,
+            onValueChange = { posterPath = it },
             label = { Text("Ruta del Poster") }
         )
         TextField(
-            value = releaseDate.value,
-            onValueChange = { releaseDate.value = it },
+            value = releaseDate,
+            onValueChange = { releaseDate = it },
             label = { Text("Fecha de Lanzamiento") }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            // Crear un nuevo objeto Content.Movie con los datos editados
-            val updatedContent = Content.Movie(
-                id = content.id, // Mantener el mismo ID
-                title = title.value,
-                overview = overview.value,
-                posterPath = posterPath.value,
-                releaseDate = releaseDate.value,
-                runtime = TODO() // Manejar la conversión
+            val updatedContent = content.copy(
+                title = title,
+                overview = overview,
+                posterPath = posterPath,
+                release_date = releaseDate
             )
-            onSave(updatedContent) // Llamar a la función de guardado
+            onSave(updatedContent)
         }) {
             Text("Guardar Cambios")
         }
